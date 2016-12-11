@@ -1,38 +1,24 @@
 version: '2'
 services:
-  #######################################
-  # PHP application Docker container
-  #
-  # for this container you have to remove
-  # following entries from .dockerignore:
-  #
-  # etc/*
-  # provision/*
-  # app/*
-  #
-  #######################################
   app:
     build:
       context: .
-      dockerfile: Dockerfile.cloud
+      dockerfile: Dockerfile.development
     links:
       - mysql
       #- postgres
-      #- mail
-      #- solr
       #- elasticsearch
       #- redis
       #- memcached
-      #- ftp
-    ports:
-      - "8000:80"
-      - "8443:443"
-      - "10022:22"
+    volumes:
+      - /tmp/debug/:/tmp/debug/
+      - ./:/docker/
     volumes_from:
       - storage
-    env_file:
-      - etc/environment.yml
-      - etc/environment.production.yml
+    # cap and privileged needed for slowlog
+    cap_add:
+      - SYS_PTRACE
+    privileged: true
 
   #######################################
   # MySQL server
@@ -48,11 +34,12 @@ services:
       #dockerfile: Percona-5.5.Dockerfile
       #dockerfile: Percona-5.6.Dockerfile
       #dockerfile: Percona-5.7.Dockerfile
+    ports:
+      - 3306:3306
     volumes_from:
       - storage
-    env_file:
-      - etc/environment.yml
-      - etc/environment.production.yml
+    volumes:
+      - /tmp/debug/:/tmp/debug/
 
   #######################################
   # PostgreSQL server
@@ -62,25 +49,13 @@ services:
   #    context: docker/postgres/
   #    dockerfile: Postgres-9.4.Dockerfile
   #    dockerfile: Postgres-9.5.Dockerfile
+  #  ports:
+  #    - 15432:5432
   #  volumes_from:
   #    - storage
   #  env_file:
   #    - etc/environment.yml
-  #    - etc/environment.production.yml
-
-  #######################################
-  # Solr server
-  #######################################
-  #solr:
-  #  build:
-  #    context: docker/solr/
-  #  volumes_from:
-  #    - storage
-  #  environment:
-  #    - SOLR_STORAGE=/storage/solr/server-master/
-  #  env_file:
-  #    - etc/environment.yml
-  #    - etc/environment.production.yml
+  #    - etc/environment.development.yml
 
   #######################################
   # Elasticsearch
@@ -88,11 +63,17 @@ services:
   #elasticsearch:
   #  build:
   #    context: docker/elasticsearch/
+  #  ports:
+  #    - 19200:9200
+  #    - 19300:9300
   #  volumes_from:
   #    - storage
   #  env_file:
   #    - etc/environment.yml
-  #    - etc/environment.production.yml
+  #    - etc/environment.development.yml
+  #  environment:
+  #    - VIRTUAL_HOST=elasticsearch.boilerplate.docker
+  #    - VIRTUAL_PORT=9200
 
   #######################################
   # Redis
@@ -104,7 +85,7 @@ services:
   #    - storage
   #  env_file:
   #    - etc/environment.yml
-  #    - etc/environment.production.yml
+  #    - etc/environment.development.yml
 
   #######################################
   # Memcached
@@ -116,20 +97,7 @@ services:
   #    - storage
   #  env_file:
   #    - etc/environment.yml
-  #    - etc/environment.production.yml
-
-  #######################################
-  # FTP (vsftpd)
-  #######################################
-  #ftp:
-  #  build:
-  #    context: docker/vsftpd/
-  #  volumes_from:
-  #    - sourcecode
-  #    - storage
-  #  env_file:
-  #    - etc/environment.yml
-  #    - etc/environment.production.yml
+  #    - etc/environment.development.yml
 
   #######################################
   # Storage

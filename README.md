@@ -1,4 +1,4 @@
-![PHP Docker Boilerplate](https://static.webdevops.io/php-docker-boilerplate.svg)
+![Webdevops Docker Boilerplate](https://static.webdevops.io/dockerfile.svg)
 
 ![License MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)
 
