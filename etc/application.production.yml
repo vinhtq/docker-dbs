@@ -1,0 +1,9 @@
+---
+
+PROVISION:
+  service:
+    - { service: "dnsmasq", status: "enabled" }
+
+DNS:
+  domain:
+    - { domain: ".vm", address: "127.0.0.1" }
